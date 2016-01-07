@@ -29,5 +29,8 @@
     <ClCompile Include="test_syscall_throwing.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="test_intros_struct.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
