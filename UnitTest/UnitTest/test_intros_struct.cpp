@@ -6,6 +6,7 @@
 #include <string>
 #include <iostream>
 #include <boost\property_tree\json_parser.hpp>
+#include <boost\property_tree\xml_parser.hpp>
 
 using namespace std;
 using namespace utils;
@@ -72,9 +73,39 @@ struct test_no_intros
 	int val;
 };
 
+struct test_has_intros_struct
+{
+	int id;
+	string name;
+	
+	test_has_intros_struct() : id{}, name{} {}
+	test_has_intros_struct(int id_, const string& name_) : id(id_), name(name_) {}
+
+	INTROS_STRUCT("test_has_intros_struct", id, name);
+};
+
+bool operator==(const test_has_intros_struct& lhs, const test_has_intros_struct& rhs)
+{
+	return (lhs.id == rhs.id && lhs.name == rhs.name);
+}
+
 bool operator==(const test_no_intros& lhs, const test_no_intros& rhs)
 {
 	return lhs.val == rhs.val;
+}
+
+struct debug
+{
+	string filename;
+	int level;
+	vector<string> module;
+
+	INTROS_STRUCT("debug", filename, level, module);
+} in, out;
+
+bool operator==(const debug& lhs, const debug& rhs)
+{
+	return lhs.filename == rhs.filename && lhs.level == rhs.level && lhs.module == rhs.module;
 }
 
 namespace UnitTest
@@ -405,7 +436,65 @@ namespace UnitTest
 
 			in.v = { test_no_intros{1}, test_no_intros{2}, test_no_intros{3} };
 
-			TEST_STRUCT(in, out);
+			// will fail to compile, with static_assert
+			// as test_no_intros don't have intros_struct
+			//TEST_STRUCT(in, out);
+
+
+			struct struct_conts_2
+			{
+				int val;
+				vector<test_has_intros_struct> v;
+				INTROS_STRUCT("struct_conts_2", val, v);
+
+				bool operator==(const struct_conts_2& rhs)
+				{
+					return (
+						val == rhs.val &&
+						v == rhs.v);
+				}
+
+			} in2, out2;
+
+			in2.val = -1234;
+
+			in2.v = { test_has_intros_struct(1, "fdsf"), test_has_intros_struct(2323, "fdsff"), test_has_intros_struct(434, "dsad") };
+
+			//auto& tree = struct_to_ptree(in2);
+
+			//auto& item = std::get<1>(out2.intros_struct.items);
+
+			//read_item_impl("", item.name, item.val, tree, item_has_forward_iterator());
+
+			//read_item("", std::get<1>(out2.intros_struct.items), tree);
+
+			//boost::fusion::for_each(out2.intros_struct.items,
+			//	[&tree](auto& x) {
+			//	read_item("", x, tree); });
+
+			//details::struct_from_ptree_impl("", out2, tree);
+			//struct_from_ptree(out2, tree);
+
+			//TEST_STRUCT(in2, out2);
+		}
+
+		TEST_METHOD(test_load_xml)
+		{
+			ptree tree;
+			read_xml("../UnitTest/debug_settings.xml", tree);
+
+			struct_from_ptree(in, tree);
+
+			Assert::IsTrue(
+				in.filename == "debug.log" &&
+				in.level == 2 &&
+				in.module == vector<string>{"Finance", "Admin", "HR"}
+			);
+
+			auto tree2 = struct_to_ptree(in);
+			struct_from_ptree(out, tree2);
+
+			Assert::IsTrue(in == out);
 		}
 	};
 }
