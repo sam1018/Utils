@@ -33,7 +33,7 @@ namespace utils {
 	}
 }
 
-IMPLEMENT_EXPR_TEST(has_intros, decltype(&T::intros), T)
+IMPLEMENT_EXPR_TEST(has_intros, decltype(&T::get_intros_struct), T)
 IMPLEMENT_EXPR_TEST_INDIRECT(is_streamable, is_streamable_check, T)
 IMPLEMENT_EXPR_TEST_INDIRECT(has_forward_iterator, has_fwd_iter_check, T)
 
@@ -93,55 +93,6 @@ struct intros_item
 	std::string intermediate_name;
 	T& val;
 };
-
-#define GET_TYPE(ignore1, ignore2, val)	\
-	intros_item<decltype(val)>
-
-#define GET_ITEM_DESCRIPTION(x, name, intermediate_name)	\
-	(intros_item<decltype(x)>{name, intermediate_name, x})
-
-#define GET_ITEM_DESCRIPTION_X(ignore1, struct_name, x)	\
-	GET_ITEM_DESCRIPTION(x, BOOST_PP_STRINGIZE(x), get_item_name_intermediate(BOOST_PP_STRINGIZE(x), utils::details::item_category<decltype(x)>()))
-
-#define EXPAND_TUPLE_ITEMS(struct_name, ...)	\
-	UTILS_PP_VARIADIC_TRANSFORM(GET_ITEM_DESCRIPTION_X, struct_name, __VA_ARGS__)
-
-#define EXPAND_TUPLE_TYPES(...)		\
-	UTILS_PP_VARIADIC_TRANSFORM(GET_TYPE, ~, __VA_ARGS__)
-
-#define APPLY_DECLTYPE(ignore1, ignore2, x)	\
-	decltype(x)
-
-#define DECLTYPE_VARARG(...)	\
-	UTILS_PP_VARIADIC_TRANSFORM(APPLY_DECLTYPE, ~, __VA_ARGS__)
-
-#define REMOVE_PARENS(...)	\
-	__VA_ARGS__
-
-#define REMOVE_PARENS_X(ignore1, ignore2, x)	\
-	REMOVE_PARENS(x)
-
-#define REMOVE_PARENS_VARARG(...)	\
-	UTILS_PP_VARIADIC_TRANSFORM(REMOVE_PARENS_X, ~, __VA_ARGS__)
-
-#define INTROS_STRUCT_IMPL(struct_name, ...)			\
-intros_struct<EXPAND_TUPLE_TYPES(__VA_ARGS__)>			\
-intros													\
-{														\
-	struct_name,										\
-	std::tuple<EXPAND_TUPLE_TYPES(__VA_ARGS__)>			\
-		{EXPAND_TUPLE_ITEMS(struct_name, __VA_ARGS__)}	\
-};
-
-//#define INTROS_STRUCT_USER_NAME_IMPL(struct_name, ...)	\
-//struct_introspection<DECLTYPE_VARARG(__VA_ARGS__)>		\
-//intros_struct											\
-//{														\
-//	struct_name,										\
-//	std::tuple<DECLTYPE_VARARG(__VA_ARGS__)>			\
-//		{REMOVE_PARENS_VARARG(__VA_ARGS__)}				\
-//};
-
 
 namespace utils
 {
@@ -253,17 +204,17 @@ namespace utils
 		}
 
 		template<typename T, std::enable_if_t<has_intros<T>::value, int> = 0>
-		boost::property_tree::ptree struct_to_ptree_impl(const T& in)
+		boost::property_tree::ptree struct_to_ptree_impl(T& in)
 		{
 			boost::property_tree::ptree tree;
 
-			struct_to_ptree_impl("", tree, in.intros);
+			struct_to_ptree_impl("", tree, in.get_intros_struct());
 
 			return tree;
 		}
 
 		template<typename T>
-		boost::property_tree::ptree struct_to_ptree_impl(boost::property_tree::path cur_path, boost::property_tree::ptree& tree, const T& in)
+		boost::property_tree::ptree struct_to_ptree_impl(boost::property_tree::path cur_path, boost::property_tree::ptree& tree, T& in)
 		{
 			cur_path /= in.struct_name;
 
@@ -284,9 +235,9 @@ namespace utils
 		template<typename T, std::enable_if_t<has_intros<T>::value, int> = 0>
 		void struct_from_ptree_impl(boost::property_tree::path cur_path, T& out, const boost::property_tree::ptree& tree)
 		{
-			cur_path /= out.intros.struct_name;
+			cur_path /= out.get_intros_struct().struct_name;
 
-			boost::fusion::for_each(out.intros.items, 
+			boost::fusion::for_each(out.get_intros_struct().items,
 				[&tree, &cur_path](auto& x) {
 				read_item(cur_path, x, tree); });
 		}

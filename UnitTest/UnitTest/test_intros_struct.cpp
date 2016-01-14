@@ -81,7 +81,10 @@ struct test_has_intros_struct
 	test_has_intros_struct() : id{}, name{} {}
 	test_has_intros_struct(int id_, const string& name_) : id(id_), name(name_) {}
 
-	INTROS_STRUCT("test_has_intros_struct", id, name);
+	BEGIN_INTROS_STRUCT("test_has_intros_struct")
+		ADD_INTROS_ITEM(id)
+		ADD_INTROS_ITEM(name)
+	END_INTROS_STRUCT()
 };
 
 bool operator==(const test_has_intros_struct& lhs, const test_has_intros_struct& rhs)
@@ -100,7 +103,12 @@ struct debug
 	int level;
 	vector<string> module;
 
-	INTROS_STRUCT("debug", filename, level, module);
+	BEGIN_INTROS_STRUCT("debug")
+		ADD_INTROS_ITEM(filename)
+		ADD_INTROS_ITEM(level)
+		ADD_INTROS_ITEM(module)
+	END_INTROS_STRUCT()
+
 } in, out;
 
 bool operator==(const debug& lhs, const debug& rhs)
@@ -127,7 +135,9 @@ namespace UnitTest
 		Test2 test2;
 		int arr[6];
 
-		INTROS_STRUCT("Test", int_vals);
+		BEGIN_INTROS_STRUCT("Test")
+			ADD_INTROS_ITEM(int_vals)
+		END_INTROS_STRUCT()
 	};
 
 	struct item_cat
@@ -151,7 +161,10 @@ namespace UnitTest
 			struct struct_with_intros
 			{
 				int x;
-				INTROS_STRUCT("AA", x);
+
+				BEGIN_INTROS_STRUCT("AA")
+					ADD_INTROS_ITEM(x)
+				END_INTROS_STRUCT()
 			};
 
 			item_cat item_cat_tags;
@@ -244,7 +257,6 @@ namespace UnitTest
 			struct struct_no_intros
 			{
 				int val;
-				//INTROS_STRUCT("struct_int", val);
 
 				bool operator==(const struct_no_intros& rhs)
 				{
@@ -267,7 +279,11 @@ namespace UnitTest
 			{
 				int val;
 				int a[10];
-				INTROS_STRUCT("struct_int", a);
+
+				BEGIN_INTROS_STRUCT("struct_int")
+					ADD_INTROS_ITEM(a)
+				END_INTROS_STRUCT()
+
 
 				bool operator==(const struct_no_intros& rhs)
 				{
@@ -290,7 +306,12 @@ namespace UnitTest
 			{
 				int val;
 				map<string, int> m;
-				INTROS_STRUCT("struct_int", val, m);
+
+				BEGIN_INTROS_STRUCT("struct_int")
+					ADD_INTROS_ITEM(val)
+					ADD_INTROS_ITEM(m)
+				END_INTROS_STRUCT()
+
 
 				bool operator==(const struct_unsupported_type& rhs)
 				{
@@ -312,7 +333,10 @@ namespace UnitTest
 			struct struct_int
 			{
 				int val;
-				INTROS_STRUCT("struct_int", val);
+
+				BEGIN_INTROS_STRUCT("struct_int")
+					ADD_INTROS_ITEM(val)
+				END_INTROS_STRUCT()
 
 				bool operator==(const struct_int& rhs)
 				{
@@ -332,7 +356,11 @@ namespace UnitTest
 			{
 				int val;
 				string s;
-				INTROS_STRUCT("struct_int_string", val, s);
+
+				BEGIN_INTROS_STRUCT("struct_int_string")
+					ADD_INTROS_ITEM(val)
+					ADD_INTROS_ITEM(s)
+				END_INTROS_STRUCT()
 
 				bool operator==(const struct_int_string& rhs)
 				{
@@ -360,7 +388,16 @@ namespace UnitTest
 				double d;
 				bool b_f;
 				bool b_t;
-				INTROS_STRUCT("struct_int_string", val, s, s2, f, d, b_f, b_t);
+
+				BEGIN_INTROS_STRUCT("struct_int_string")
+					ADD_INTROS_ITEM(val)
+					ADD_INTROS_ITEM(s)
+					ADD_INTROS_ITEM(s2)
+					ADD_INTROS_ITEM(f)
+					ADD_INTROS_ITEM(d)
+					ADD_INTROS_ITEM(b_f)
+					ADD_INTROS_ITEM(b_t)
+				END_INTROS_STRUCT()
 
 				bool operator==(const struct_int_string& rhs)
 				{
@@ -394,7 +431,12 @@ namespace UnitTest
 				int val;
 				vector<int> vi;
 				list<string> ls;
-				INTROS_STRUCT("struct_conts", val, vi, ls);
+
+				BEGIN_INTROS_STRUCT("struct_conts")
+					ADD_INTROS_ITEM(val)
+					ADD_INTROS_ITEM(vi)
+					ADD_INTROS_ITEM(ls)
+				END_INTROS_STRUCT()
 
 				bool operator==(const struct_conts& rhs)
 				{
@@ -421,7 +463,11 @@ namespace UnitTest
 			{
 				int val;
 				vector<test_no_intros> v;
-				INTROS_STRUCT("struct_conts", val, v);
+
+				BEGIN_INTROS_STRUCT("struct_conts")
+					ADD_INTROS_ITEM(val)
+					ADD_INTROS_ITEM(v)
+				END_INTROS_STRUCT()
 
 				bool operator==(const struct_conts& rhs)
 				{
@@ -445,7 +491,11 @@ namespace UnitTest
 			{
 				int val;
 				vector<test_has_intros_struct> v;
-				INTROS_STRUCT("struct_conts_2", val, v);
+
+				BEGIN_INTROS_STRUCT("struct_conts_2")
+					ADD_INTROS_ITEM(val)
+					ADD_INTROS_ITEM(v)
+				END_INTROS_STRUCT()
 
 				bool operator==(const struct_conts_2& rhs)
 				{
@@ -459,23 +509,6 @@ namespace UnitTest
 			in2.val = -1234;
 
 			in2.v = { test_has_intros_struct(1, "fdsf"), test_has_intros_struct(2323, "fdsff"), test_has_intros_struct(434, "dsad") };
-
-			//auto& tree = struct_to_ptree(in2);
-
-			//auto& item = std::get<1>(out2.intros_struct.items);
-
-			//read_item_impl("", item.name, item.val, tree, item_has_forward_iterator());
-
-			//read_item("", std::get<1>(out2.intros_struct.items), tree);
-
-			//boost::fusion::for_each(out2.intros_struct.items,
-			//	[&tree](auto& x) {
-			//	read_item("", x, tree); });
-
-			//details::struct_from_ptree_impl("", out2, tree);
-			//struct_from_ptree(out2, tree);
-
-			//TEST_STRUCT(in2, out2);
 		}
 
 		TEST_METHOD(test_load_xml)
