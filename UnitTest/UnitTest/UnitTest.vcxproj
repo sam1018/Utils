@@ -154,6 +154,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\utils\details\intros_ptree_details.hpp" />
+    <ClInclude Include="..\..\utils\details\is_valid_expression_details.hpp" />
+    <ClInclude Include="..\..\utils\intros_ptree.hpp" />
+    <ClInclude Include="..\..\utils\intros_type.hpp" />
+    <ClInclude Include="..\..\utils\is_valid_expression.hpp" />
+    <ClInclude Include="..\..\utils\pp_variadic_transform.hpp" />
+    <ClInclude Include="..\..\utils\syscall_throwing.hpp" />
+    <ClInclude Include="..\..\utils\util_traits.hpp" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
@@ -164,7 +172,8 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="test_intros_struct.cpp" />
+    <ClCompile Include="test_xml_parse.cpp" />
+    <ClCompile Include="test_intros_type.cpp" />
     <ClCompile Include="test_is_valid_expression.cpp" />
     <ClCompile Include="test_pp_variadic_transform.cpp" />
     <ClCompile Include="test_syscall_throwing.cpp" />
