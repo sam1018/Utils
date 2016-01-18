@@ -8,6 +8,7 @@
 using namespace std;
 using namespace boost::property_tree;
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
+using namespace utils::intros_ptree;
 
 struct book
 {
@@ -107,7 +108,7 @@ namespace UnitTest
 
 			debug in, out;
 
-			utils::intros_from_ptree(in, tree);
+			intros_from_ptree(in, tree);
 
 			Assert::IsTrue(
 				in.filename == "debug.log" &&
@@ -115,8 +116,8 @@ namespace UnitTest
 				in.modules == vector<string>{"Finance", "Admin", "HR"}
 			);
 
-			auto tree2 = utils::intros_to_ptree(in);
-			utils::intros_from_ptree(out, tree2);
+			auto tree2 = intros_to_ptree(in);
+			intros_from_ptree(out, tree2);
 
 			Assert::IsTrue(in == out);
 		}
@@ -128,13 +129,13 @@ namespace UnitTest
 
 			catalog in;
 
-			utils::intros_from_ptree(in, tree);
+			intros_from_ptree(in, tree);
 
 			auto actual_value = get_actual_value();
 
 			Assert::IsTrue(in == actual_value);
 
-			ptree tree2 = utils::intros_to_ptree(in);
+			ptree tree2 = intros_to_ptree(in);
 
 			stringstream ss;
 			write_xml(ss, tree2);
@@ -142,7 +143,7 @@ namespace UnitTest
 
 			catalog out;
 
-			utils::intros_from_ptree(out, tree2);
+			intros_from_ptree(out, tree2);
 
 			Assert::IsTrue(in == out);
 		}

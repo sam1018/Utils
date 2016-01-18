@@ -155,6 +155,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\utils\details\intros_ptree_details.hpp" />
+    <ClInclude Include="..\..\utils\details\intros_type_details.hpp" />
     <ClInclude Include="..\..\utils\details\is_valid_expression_details.hpp" />
     <ClInclude Include="..\..\utils\intros_ptree.hpp" />
     <ClInclude Include="..\..\utils\intros_type.hpp" />
@@ -172,6 +173,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="test_intros_ptree.cpp" />
     <ClCompile Include="test_xml_parse.cpp" />
     <ClCompile Include="test_intros_type.cpp" />
     <ClCompile Include="test_is_valid_expression.cpp" />

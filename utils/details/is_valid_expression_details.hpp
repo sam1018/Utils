@@ -16,7 +16,7 @@
 	BOOST_PP_CAT(name, _impl1)
 
 #define IMPLEMENT_EXPR_TEST_IMPL(name, base, test, ...)						\
-	namespace utils															\
+	namespace exprtest														\
 	{																		\
 		namespace details													\
 		{																	\
@@ -28,14 +28,14 @@
 			template<EXPAND_TYPE_PARAMS(__VA_ARGS__)>						\
 			std::false_type EXPR_TEST_NAME_IMPL1(name)(...);				\
 		}																	\
-		template<EXPAND_TYPE_PARAMS(__VA_ARGS__)>							\
-		struct name base													\
-		{																	\
-			static constexpr bool value = decltype(							\
-				details::EXPR_TEST_NAME_IMPL1(name)<__VA_ARGS__>(nullptr)	\
-			)::value;														\
-		};																	\
-	}
+	}																		\
+	template<EXPAND_TYPE_PARAMS(__VA_ARGS__)>								\
+	struct name base														\
+	{																		\
+	static constexpr bool value = decltype(									\
+		exprtest::details::EXPR_TEST_NAME_IMPL1(name)<__VA_ARGS__>(nullptr)	\
+		)::value;															\
+	};
 
 
 #define SEMICOLON :

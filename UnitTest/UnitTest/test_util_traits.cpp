@@ -11,7 +11,7 @@
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 using namespace std;
-using namespace utils;
+using namespace utils::traits;
 
 struct val_true
 {

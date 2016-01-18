@@ -1,549 +1,225 @@
 #include "stdafx.h"
 #include "CppUnitTest.h"
 #include "intros_type.hpp"
-#include "intros_ptree.hpp"
 #include <map>
-#include <list>
-#include <string>
-#include <iostream>
-#include <boost\property_tree\json_parser.hpp>
-#include <boost\property_tree\xml_parser.hpp>
+#include <vector>
 
-using namespace std;
-using namespace utils;
-using namespace utils::details;
-using namespace boost::property_tree;
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
+using namespace std;
 
-enum class enum_item_cat
+struct test_empty
 {
-	HAS_INTROS,
-	IS_ARRAY,
-	IS_STREAMABLE,
-	HAS_FORWARD_ITERATOR,
-	NOT_SUPPORTED
+	int x;
+};
+// defining intros without any item is legal
+// also, defining intros without all the members of the struct is also legal
+// so, the following should compile
+BEGIN_INTROS_TYPE(test_empty)
+END_INTROS_TYPE(test_empty)
+
+struct test
+{
+	int d;
+	float f;
+	string s;
+	int a[10];
+	vector<string> vs;
+	map<int, vector<string>> mvs;
 };
 
-namespace Microsoft {
-	namespace VisualStudio {
-		namespace CppUnitTestFramework {
-			template<> inline std::wstring ToString<enum_item_cat>(const enum_item_cat& val) 
-			{
-				switch (val)
-				{
-				case enum_item_cat::HAS_INTROS:
-					return L"HAS_INTROS";
-					break;
-				case enum_item_cat::IS_ARRAY:
-					return L"IS_ARRAY";
-					break;
-				case enum_item_cat::IS_STREAMABLE:
-					return L"IS_STREAMABLE";
-					break;
-				case enum_item_cat::HAS_FORWARD_ITERATOR:
-					return L"HAS_FORWARD_ITERATOR";
-					break;
-				case enum_item_cat::NOT_SUPPORTED:
-					return L"NOT_SUPPORTED";
-					break;
-				default:
-					break;
-				}
+BEGIN_INTROS_TYPE(test)
+	ADD_INTROS_ITEM(d)
+	ADD_INTROS_ITEM(f)
+	ADD_INTROS_ITEM(s)
+	ADD_INTROS_ITEM(a)
+	ADD_INTROS_ITEM(vs)
+	ADD_INTROS_ITEM(mvs)
+END_INTROS_TYPE(test)
 
-				return L"";
-			}
-		}
-	}
+test get_test_val()
+{
+	test ob;
+
+	ob.a[4] = 10;
+	ob.d = 12;
+	ob.f = 123.456f;
+	ob.mvs = map<int, vector<string>>{ make_pair<int, vector<string>>(1,{ "hello", "string2" }) };
+	ob.s = "test";
+	ob.vs = { "ab", "cd" };
+
+	return ob;
 }
 
 template<typename T>
-void check_struct(T& in, T& out)
+bool compare_test_with_intros(const test& ob, const T& intros)
 {
-	auto tree = intros_to_ptree(in);
-
-	stringstream ss;
-
-	write_xml(ss, tree);
-
-	Logger::WriteMessage(ss.str().c_str());
-
-	try
-	{
-		intros_from_ptree(out, tree);
-	}
-	catch (exception& e)
-	{
-		Logger::WriteMessage(e.what());
-		Assert::Fail();
-	}
-	Assert::IsTrue(in == out, L"Not Same!!!");
+	auto t = intros.items;
+	return
+		intros.name == "test" &&
+		get<0>(t).name == "d" && get<0>(t).val == 12 &&
+		get<1>(t).name == "f" && get<1>(t).val == 123.456f &&
+		get<2>(t).name == "s" && get<2>(t).val == "test" &&
+		get<3>(t).name == "a" && get<3>(t).val[4] == 10 &&
+		get<4>(t).name == "vs" && get<4>(t).val == vector<string>{ "ab", "cd" } &&
+		get<5>(t).name == "mvs" && get<5>(t).val == map<int, vector<string>>{ make_pair<int, vector<string>>(1, { "hello", "string2" }) }
+	;
 }
 
-struct test_no_intros
+void set_test_val(test& ob)
 {
-	int val;
-};
-
-struct test_has_intros_type
-{
-	int id;
-	string name;
-	
-	test_has_intros_type() : id{}, name{} {}
-	test_has_intros_type(int id_, const string& name_) : id(id_), name(name_) {}
-};
-
-BEGIN_INTROS_TYPE(test_has_intros_type)
-	ADD_INTROS_ITEM(id)
-	ADD_INTROS_ITEM(name)
-END_INTROS_TYPE(test_has_intros_type)
-
-bool operator==(const test_has_intros_type& lhs, const test_has_intros_type& rhs)
-{
-	return (lhs.id == rhs.id && lhs.name == rhs.name);
+	ob = get_test_val();
 }
 
-bool operator==(const test_no_intros& lhs, const test_no_intros& rhs)
-{
-	return lhs.val == rhs.val;
-}
-
-struct Test2
-{
-	string name1;
-	string name2;
-};
-
-struct struct_unsupported_array
-{
-	int int_val;
-	float float_val;
-	double double_val;
-	string name;
-	vector<int> int_vals;
-	vector<string> string_vals;
-	Test2 test2;
-	int arr[6];
-};
-
-BEGIN_INTROS_TYPE(struct_unsupported_array)
-	ADD_INTROS_ITEM(int_vals)
-END_INTROS_TYPE(struct_unsupported_array)
-
-struct struct_without_intros
-{
-	int x;
-};
-struct struct_with_intros
+// we can set different name for the intros
+struct test_diff_name
 {
 	int x;
 };
 
-BEGIN_INTROS_TYPE(struct_with_intros)
+BEGIN_INTROS_TYPE_USER_NAME(test_diff_name, "another name")
 	ADD_INTROS_ITEM(x)
-END_INTROS_TYPE(struct_with_intros)
+END_INTROS_TYPE(test_diff_name)
 
-struct struct_no_intros
+// we can set different name for item
+struct test_diff_item_name
 {
-	int val;
-	int a[10];
-
-	bool operator==(const struct_no_intros& rhs)
-	{
-		return (val == rhs.val);
-	}
-
+	int x;
 };
 
-BEGIN_INTROS_TYPE(struct_no_intros)
-	ADD_INTROS_ITEM(a)
-END_INTROS_TYPE(struct_no_intros)
+BEGIN_INTROS_TYPE(test_diff_item_name)
+	ADD_INTROS_ITEM_USER_NAME(x, "diff item name")
+END_INTROS_TYPE(test_diff_item_name)
 
-struct struct_unsupported_type
+struct test_no_default_ctor
 {
-	int val;
-	map<string, int> m;
-
-	bool operator==(const struct_unsupported_type& rhs)
+	int x;
+	test_no_default_ctor(int _x) : x(_x)
 	{
-		return (val == rhs.val);
 	}
-
 };
 
-BEGIN_INTROS_TYPE(struct_unsupported_type)
-	ADD_INTROS_ITEM(val)
-	ADD_INTROS_ITEM(m)
-END_INTROS_TYPE(struct_unsupported_type)
+// no default ctor works as well
+// the following is ok
+BEGIN_INTROS_TYPE(test_no_default_ctor)
+	ADD_INTROS_ITEM(x)
+END_INTROS_TYPE(test_no_default_ctor)
 
-
-struct struct_int
+struct test_new_scope
 {
-	int val;
-
-	bool operator==(const struct_int& rhs)
-	{
-		return (val == rhs.val);
-	}
-
+	int x;
 };
 
+BEGIN_INTROS_TYPE(test_new_scope)
+	ADD_INTROS_ITEM(x)
+END_INTROS_TYPE(test_new_scope)
 
-BEGIN_INTROS_TYPE(struct_int)
-	ADD_INTROS_ITEM(val)
-END_INTROS_TYPE(struct_int)
-
-
-struct struct_int_string
+namespace new_scope
 {
-	int val;
+	// we can define intros in two different scopes
+	BEGIN_INTROS_TYPE(test_new_scope)
+		ADD_INTROS_ITEM(x)
+	END_INTROS_TYPE(test_new_scope)
+}
+
+struct test2
+{
+	int x;
+};
+
+BEGIN_INTROS_TYPE(test2)
+	ADD_INTROS_ITEM(x)
+END_INTROS_TYPE(test2)
+
+struct test_nest_intros
+{
+	test ob1;
+	vector<test2> ob2;
+	int x;
 	string s;
-
-	bool operator==(const struct_int_string& rhs)
-	{
-		return (
-			val == rhs.val &&
-			s == rhs.s);
-	}
-
 };
-
-BEGIN_INTROS_TYPE(struct_int_string)
-	ADD_INTROS_ITEM(val)
+BEGIN_INTROS_TYPE(test_nest_intros)
+	ADD_INTROS_ITEM(ob1)
+	ADD_INTROS_ITEM(ob2)
+	ADD_INTROS_ITEM(x)
 	ADD_INTROS_ITEM(s)
-END_INTROS_TYPE(struct_int_string)
-
-
-struct struct_multiple_elems
-{
-	int val;
-	string s;
-	string s2;
-	float f;
-	double d;
-	bool b_f;
-	bool b_t;
-
-	bool operator==(const struct_multiple_elems& rhs)
-	{
-		return (
-			val == rhs.val &&
-			s == rhs.s &&
-			s2 == rhs.s2 &&
-			f == rhs.f &&
-			d == rhs.d &&
-			b_t == rhs.b_t &&
-			b_t == rhs.b_t);
-	}
-
-};
-
-BEGIN_INTROS_TYPE(struct_multiple_elems)
-	ADD_INTROS_ITEM(val)
-	ADD_INTROS_ITEM(s)
-	ADD_INTROS_ITEM(s2)
-	ADD_INTROS_ITEM(f)
-	ADD_INTROS_ITEM(d)
-	ADD_INTROS_ITEM(b_f)
-	ADD_INTROS_ITEM(b_t)
-END_INTROS_TYPE(struct_multiple_elems)
-
+END_INTROS_TYPE(test_nest_intros)
 
 namespace UnitTest
 {
-	struct item_cat
-	{
-		auto operator()(item_has_intros)			{ return enum_item_cat::HAS_INTROS;				}
-		auto operator()(item_is_array)				{ return enum_item_cat::IS_ARRAY;				}
-		auto operator()(item_is_streamable)			{ return enum_item_cat::IS_STREAMABLE;			}
-		auto operator()(item_has_forward_iterator)	{ return enum_item_cat::HAS_FORWARD_ITERATOR;	}
-		auto operator()(item_not_supported)			{ return enum_item_cat::NOT_SUPPORTED;			}
-	};
-
 	TEST_CLASS(UnitTest)
 	{
 	public:
-		TEST_METHOD(test_item_category)
+		TEST_METHOD(test_intros)
 		{
-			item_cat item_cat_tags;
+			test ob;
 
-			//enum_item_cat::HAS_INTROS
-			Assert::AreEqual(enum_item_cat::HAS_INTROS, item_cat_tags(item_category<struct_with_intros>()));
+			set_test_val(ob);
 
-			//enum_item_cat::IS_ARRAY
-			Assert::AreEqual(enum_item_cat::IS_ARRAY, item_cat_tags(item_category<int[10]>()));
-			Assert::AreEqual(enum_item_cat::IS_ARRAY, item_cat_tags(item_category<char[]>()));
+			auto t = get_intros_type(ob);
 
-			//enum_item_cat::IS_STREAMABLE
-			Assert::AreEqual(enum_item_cat::IS_STREAMABLE, item_cat_tags(item_category<int>()));
-			Assert::AreEqual(enum_item_cat::IS_STREAMABLE, item_cat_tags(item_category<float>()));
-			Assert::AreEqual(enum_item_cat::IS_STREAMABLE, item_cat_tags(item_category<double>()));
-			Assert::AreEqual(enum_item_cat::IS_STREAMABLE, item_cat_tags(item_category<string>()));
+			// any modification in ob will be reflected in t
 
-			//enum_item_cat::HAS_FORWARD_ITERATOR
-			Assert::AreEqual(enum_item_cat::HAS_FORWARD_ITERATOR, item_cat_tags(item_category<vector<int>>()));
-			Assert::AreEqual(enum_item_cat::HAS_FORWARD_ITERATOR, item_cat_tags(item_category<map<string, int>>()));
-			Assert::AreEqual(enum_item_cat::HAS_FORWARD_ITERATOR, item_cat_tags(item_category<list<string>>()));
+			Assert::IsTrue(compare_test_with_intros(ob, t));
 
-			//enum_item_cat::NOT_SUPPORTED
-			Assert::AreEqual(enum_item_cat::NOT_SUPPORTED, item_cat_tags(item_category<map<string, int>::value_type>()));
-			Assert::AreEqual(enum_item_cat::NOT_SUPPORTED, item_cat_tags(item_category<struct_without_intros>()));
-		}
-		
-		TEST_METHOD(test_intros_type)
-		{
-			struct_unsupported_array test;
+			// the opposite is also true
+			// any change in t will be reflected in ob
 
-			test.int_val = 100;
-			test.float_val = 120.345f;
-			test.double_val = 123456789.123456789;
-			test.name = "SomeRandomName";
+			get<0>(t.items).val = 12;
 
-			for (int i = 0; i < 2; ++i)
-				test.int_vals.push_back(i);
-
-			for (char ch = 'a'; ch < 'e'; ++ch)
-				test.string_vals.push_back(string({ch, ch, ch}));
-
-
-
-			test.test2.name1 = "Internal Name 1";
-			test.test2.name2 = "Internal Name 2";
-
-			for (int i = 0; i < 4; i++)
-				test.arr[i] = i * 2;
-
-			auto tree = intros_to_ptree(test);
-
-			stringstream ss;
-
-			write_json(ss, tree);
-
-			Logger::WriteMessage(ss.str().c_str());
-
-			struct_unsupported_array test2;
-
-			try
-			{
-				intros_from_ptree(test2, tree);
-			}
-			catch (exception& e)
-			{
-				Logger::WriteMessage(e.what());
-			}
-
-			ss = stringstream();
-
-			ss << test2.int_val << " " << test2.float_val << " " << test2.double_val << " " << test2.name << "\n";
-			copy(test2.int_vals.begin(), test2.int_vals.end(), ostream_iterator<int>(ss, " "));
-			ss << "\n";
-			copy(test2.string_vals.begin(), test2.string_vals.end(), ostream_iterator<string>(ss, " "));
-			ss << "\n";
-
-			Logger::WriteMessage(ss.str().c_str());
+			Assert::AreEqual(ob.d, 12);
 		}
 
-		TEST_METHOD(test_struct_unsupported_no_intros)
+		TEST_METHOD(test_intros_for_const)
 		{
-			struct struct_no_intros
-			{
-				int val;
+			const test ob = get_test_val();
 
-				bool operator==(const struct_no_intros& rhs)
-				{
-					return (val == rhs.val);
-				}
+			auto t = get_intros_type(ob);
 
-			} in1, out1;
+			// We can read from t
+			Assert::AreEqual(get<0>(t.items).val, 12);
 
-			in1.val = -1234;
-
-			// this will fail to compile with static_assert
-			//TEST_STRUCT(in1, out1);
-
-			out1.val = 10; // to remove unreferenced variable warning
+			// but we can't modify t.items
+			// the following won't compile
+			//get<0>(t.items).val = 14;
 		}
 
-		TEST_METHOD(test_struct_unsupported_array)
+		TEST_METHOD(test_intros_change_name)
 		{
-			struct_unsupported_array in1, out1;
+			test ob;
+			auto t = get_intros_type(ob);
+			auto t2 = get_intros_type(ob);
 
-			in1.val = -1234;
-
-			// this will fail to compile with static_assert
-			//TEST_STRUCT(in1, out1);
-
-			out1.val = 123; // to remove unreferenced variable warning
+			t.name = "changed_name";
+			get<0>(t.items).name = "another name";
+			
+			// changing names have impact only that instance of t
+			Assert::AreNotEqual(t.name, t2.name);
+			Assert::AreNotEqual(get<0>(t.items).name, get<0>(t2.items).name);
 		}
 
-		TEST_METHOD(test_struct_unsupported_type)
+		TEST_METHOD(test_intros_diff_name)
 		{
-			in1.val = -1234;
+			test_diff_name ob;
 
-			// this will fail to compile with static_assert
-			//TEST_STRUCT(in1, out1);
-
-			out1.val = 10; // to remove unreferenced variable warning
+			Assert::AreEqual(get_intros_type(ob).name, "another name"s);
 		}
 
-		TEST_METHOD(test_struct_int)
+		TEST_METHOD(test_intros_diff_item_name)
 		{
-			in.val = -1234;
+			test_diff_item_name ob;
 
-			check_struct(in, out);
+			Assert::AreEqual(get<0>(get_intros_type(ob).items).name, "diff item name"s);
 		}
 
-		TEST_METHOD(test_struct_int_string)
+		TEST_METHOD(test_intros_nested)
 		{
-			struct_int_string in, out;
+			test_nest_intros ob;
 
-			in.val = -1234;
-			in.s = "Hello World!!!";
+			ob.ob1.s = "ABCD";
 
-			check_struct(in, out);
-		}
+			auto nested_intros = get_intros_type(ob.ob1);
 
-		TEST_METHOD(test_struct_multiple_elems)
-		{
-			struct_multiple_elems in, out;
-
-			in.val = -1234;
-			in.s = "Hello World!!!";
-			in.s2 = "another string\nline 2 12345 fsdfsd <> {};   \tvvdfv";
-			in.f = 1234.56789f;
-			in.d = 234563.127657432;
-			in.b_f = false;
-			in.b_t = true;
-
-			check_struct(in, out);
-		}
-
-		TEST_METHOD(test_struct_containers)
-		{
-			struct struct_conts
-			{
-				int val;
-				vector<int> vi;
-				list<string> ls;
-
-				bool operator==(const struct_conts& rhs)
-				{
-					return (
-						val == rhs.val &&
-						vi == rhs.vi &&
-						ls == rhs.ls
-						);
-				}
-
-			} in, out;
-
-			BEGIN_INTROS_TYPE(struct_conts)
-				ADD_INTROS_ITEM(val)
-				ADD_INTROS_ITEM_USER_NAME(vi, MAKE_USER_NAME("vi", "vis", false))
-				ADD_INTROS_ITEM_USER_NAME(ls, MAKE_USER_NAME("ls", "lss", false))
-			END_INTROS_TYPE(struct_conts)
-
-
-			in.val = -1234;
-
-			in.vi = {1, 2, 3, 4, 5};
-			in.ls = { "some", "strings", "five", "items", "else" };
-
-			check_struct(in, out);
-		}
-
-		TEST_METHOD(test_struct_container_struct)
-		{
-			struct struct_conts
-			{
-				int val;
-				vector<test_no_intros> v;
-
-				bool operator==(const struct_conts& rhs)
-				{
-					return (
-						val == rhs.val &&
-						v == rhs.v);
-				}
-
-			} in, out;
-
-			BEGIN_INTROS_TYPE(struct_conts)
-				ADD_INTROS_ITEM(val)
-				ADD_INTROS_ITEM(v)
-			END_INTROS_TYPE(struct_conts)
-
-			in.val = -1234;
-
-			in.v = { test_no_intros{1}, test_no_intros{2}, test_no_intros{3} };
-
-			// will fail to compile, with static_assert
-			// as test_no_intros don't have intros_type
-			//TEST_STRUCT(in, out);
-
-
-			struct struct_conts_2
-			{
-				int val;
-				vector<test_has_intros_type> v;
-
-				bool operator==(const struct_conts_2& rhs)
-				{
-					return (
-						val == rhs.val &&
-						v == rhs.v);
-				}
-
-			} in2, out2;
-
-			BEGIN_INTROS_TYPE(struct_conts_2)
-				ADD_INTROS_ITEM(val)
-				ADD_INTROS_ITEM_USER_NAME(v, MAKE_USER_NAME("my_type_aaa", "", false))
-			END_INTROS_TYPE(struct_conts_2)
-
-			in2.val = -1234;
-
-			in2.v = { test_has_intros_type(1, "fdsf"), test_has_intros_type(2323, "fdsff"), test_has_intros_type(434, "dsad") };
-
-			check_struct(in2, out2);
-		}
-
-		TEST_METHOD(test_xml_attribute)
-		{
-			struct test
-			{
-				int id;
-				int val;
-				string name;
-			} in, out;
-
-			BEGIN_INTROS_TYPE(test)
-				ADD_INTROS_ITEM_USER_NAME(id, MAKE_USER_NAME("id", "", true))
-				ADD_INTROS_ITEM_USER_NAME(val, MAKE_USER_NAME("val", "", true))
-				ADD_INTROS_ITEM_USER_NAME(name, MAKE_USER_NAME("name", "", true))
-			END_INTROS_TYPE(test)
-
-			string test_xml = R"(
-<?xml version="1.0" encoding="utf-8"?>
-<test id = "120" val = "40" name = "ABCD">
-</test>
-)";
-			boost::property_tree::ptree tree;
-			stringstream ss(test_xml);
-			read_xml(ss, tree);
-			intros_from_ptree(in, tree);
-
-			Assert::IsTrue(in.id == 120 && in.val == 40 && in.name == "ABCD");
-
-			auto tree2 = intros_to_ptree(in);
-
-			intros_from_ptree(out, tree2);
-
-			Assert::IsTrue(in.id == out.id && in.name == out.name && in.val == out.val);
-
-			stringstream ss2;
-			write_xml(ss2, tree2);
-			Logger::WriteMessage(ss2.str().c_str());
+			Assert::AreEqual((get<2>(nested_intros.items)).val, ob.ob1.s);
 		}
 	};
 }

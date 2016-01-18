@@ -42,8 +42,6 @@ using indirect_test_add_sub = void_t<decltype(declval<T&>() + declval<U&>()), de
 IMPLEMENT_EXPR_TEST_INDIRECT(can_add_sub, indirect_test_add_sub, T, U)
 IMPLEMENT_EXPR_TEST_WITH_BASE_INDIRECT(can_add_sub_with_base, tag_base, indirect_test_add_sub, T, U)
 
-using namespace utils;
-
 namespace UnitTest
 {
 	TEST_CLASS(UnitTest)
