@@ -4,6 +4,9 @@
 
 namespace utils { namespace traits
 {
+	template<class B>
+	struct negation : std::bool_constant<!B::value> { };
+
 	template<class...> struct disjunction : std::false_type { };
 	template<class B1> struct disjunction<B1> : B1 { };
 	template<class B1, class... Bn>

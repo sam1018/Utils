@@ -106,9 +106,7 @@ namespace UnitTest
 			ptree tree;
 			read_xml("../UnitTest/debug_settings.xml", tree);
 
-			debug in, out;
-
-			intros_from_ptree(in, tree);
+			auto in = make_intros_object<debug>(tree);
 
 			Assert::IsTrue(
 				in.filename == "debug.log" &&
@@ -116,8 +114,9 @@ namespace UnitTest
 				in.modules == vector<string>{"Finance", "Admin", "HR"}
 			);
 
-			auto tree2 = intros_to_ptree(in);
-			intros_from_ptree(out, tree2);
+			auto tree2 = make_ptree(in);
+			
+			auto out = make_intros_object<debug>(tree2);
 
 			Assert::IsTrue(in == out);
 		}
@@ -127,23 +126,19 @@ namespace UnitTest
 			ptree tree;
 			read_xml("../UnitTest/books.xml", tree);
 
-			catalog in;
-
-			intros_from_ptree(in, tree);
+			auto in = make_intros_object<catalog>(tree);
 
 			auto actual_value = get_actual_value();
 
 			Assert::IsTrue(in == actual_value);
 
-			ptree tree2 = intros_to_ptree(in);
+			ptree tree2 = make_ptree(in);
 
 			stringstream ss;
 			write_xml(ss, tree2);
 			Logger::WriteMessage(ss.str().c_str());
 
-			catalog out;
-
-			intros_from_ptree(out, tree2);
+			auto out = make_intros_object<catalog>(tree2);
 
 			Assert::IsTrue(in == out);
 		}

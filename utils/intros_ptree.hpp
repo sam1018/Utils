@@ -17,13 +17,13 @@
 namespace utils { namespace intros_ptree 
 {
 	template<typename T, std::enable_if_t<!details::has_intros<T>::value, int> = 0>
-	boost::property_tree::ptree intros_to_ptree(T)
+	boost::property_tree::ptree make_ptree(T)
 	{
 		static_assert(0, "Use intros_type for introspection support");
 	}
 
 	template<typename T, std::enable_if_t<details::has_intros<T>::value, int> = 0>
-	boost::property_tree::ptree intros_to_ptree(const T& in)
+	boost::property_tree::ptree make_ptree(const T& in)
 	{
 		auto intros_type = get_intros_type(in);
 		boost::property_tree::ptree tree, subtree;
@@ -34,17 +34,27 @@ namespace utils { namespace intros_ptree
 		return tree;
 	}
 
+	//template<typename T, std::enable_if_t<!details::has_intros<T>::value, int> = 0>
+	//T make_intros_object(const boost::property_tree::ptree& tree)
+	//{
+	//	static_assert(0, "Use intros_type for introspection support");
+	//}
 
-	template<typename T, std::enable_if_t<!details::has_intros<T>::value, int> = 0>
-	void intros_from_ptree(T& out, const boost::property_tree::ptree& tree)
-	{
-		static_assert(0, "Use intros_type for introspection support");
-	}
+	//template<typename T, std::enable_if_t<details::has_intros<T>::value, int> = 0>
+	//T make_intros_object(const boost::property_tree::ptree& tree)
+	//{
+	//	T ret;
 
-	template<typename T, std::enable_if_t<details::has_intros<T>::value, int> = 0>
-	void intros_from_ptree(T& out, const boost::property_tree::ptree& tree)
+	//	auto& ret_intros = get_intros_type(ret);
+
+	//	details::intros_from_ptree_impl(ret_intros.items, tree.get_child(ret_intros.name));
+
+	//	return ret;
+	//}
+
+	template<typename T>
+	T make_intros_object(const boost::property_tree::ptree& tree)
 	{
-		details::intros_from_ptree_impl(out, 
-			tree.get_child(get_intros_type(out).name));
+		return details::make_intros_object_impl<T>(tree, details::object_write_category<T>());
 	}
 }}
