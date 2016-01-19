@@ -74,5 +74,11 @@
     <ClCompile Include="test_intros_ptree.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="test_xml_customer_orders.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="test_intros_ptree_write_xml.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

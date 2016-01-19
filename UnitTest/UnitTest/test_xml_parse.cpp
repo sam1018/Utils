@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "CppUnitTest.h"
-#include "intros_type.hpp"
 #include "intros_ptree.hpp"
 #include <boost\property_tree\ptree.hpp>
 #include <boost\property_tree\xml_parser.hpp>
@@ -133,10 +132,6 @@ namespace UnitTest
 			Assert::IsTrue(in == actual_value);
 
 			ptree tree2 = make_ptree(in);
-
-			stringstream ss;
-			write_xml(ss, tree2);
-			Logger::WriteMessage(ss.str().c_str());
 
 			auto out = make_intros_object<catalog>(tree2);
 

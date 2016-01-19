@@ -95,9 +95,7 @@ namespace utils { namespace intros_ptree { namespace details
 		void add_to_tree_impl(boost::property_tree::ptree& tree, const std::string& name, const T& val, tags::item_has_input_iterator)
 		{
 			std::for_each(val.begin(), val.end(), [&val, &tree, &name](const auto& x) {
-				//boost::property_tree::ptree subtree;
 				add_to_tree_impl(tree, name, x, item_category_read_intros<T::value_type>());
-				//tree.add_child(name, subtree);
 			});
 		}
 		template<typename T>
@@ -142,13 +140,14 @@ namespace utils { namespace intros_ptree { namespace details
 		template<typename T>
 		void add_to_intros_impl(T& val, const std::string& name, const boost::property_tree::ptree& tree, tags::item_can_stream_extract)
 		{
-			val = tree.get<T>(name);
+			val = tree.get(name, T());
 		}
 		template<typename T>
 		void add_to_intros_impl(T& val, const std::string& name, const boost::property_tree::ptree& tree, tags::item_can_insert_at_end)
 		{
 			std::string last_path;
-			auto source = tree.get_child(get_path_last_but(boost::property_tree::path(name), last_path));
+			boost::property_tree::ptree empty_tree;
+			auto source = tree.get_child(get_path_last_but(boost::property_tree::path(name), last_path), empty_tree);
 
 			for (auto source_it = source.begin(); source_it != source.end(); ++source_it)
 			{

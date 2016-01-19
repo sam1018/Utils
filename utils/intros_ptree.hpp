@@ -34,24 +34,6 @@ namespace utils { namespace intros_ptree
 		return tree;
 	}
 
-	//template<typename T, std::enable_if_t<!details::has_intros<T>::value, int> = 0>
-	//T make_intros_object(const boost::property_tree::ptree& tree)
-	//{
-	//	static_assert(0, "Use intros_type for introspection support");
-	//}
-
-	//template<typename T, std::enable_if_t<details::has_intros<T>::value, int> = 0>
-	//T make_intros_object(const boost::property_tree::ptree& tree)
-	//{
-	//	T ret;
-
-	//	auto& ret_intros = get_intros_type(ret);
-
-	//	details::intros_from_ptree_impl(ret_intros.items, tree.get_child(ret_intros.name));
-
-	//	return ret;
-	//}
-
 	template<typename T>
 	T make_intros_object(const boost::property_tree::ptree& tree)
 	{

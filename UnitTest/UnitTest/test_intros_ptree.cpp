@@ -211,21 +211,21 @@ bool operator==(const test_containers_diff_scope& lhs, const test_containers_dif
 		lhs.sd == rhs.sd;
 }
 
-struct test_attributes
+struct test_attributes_2
 {
 	int x;
 	string name;
 	vector<string> vs;
 	set<double> sd;
 };
-BEGIN_INTROS_TYPE(test_attributes)
+BEGIN_INTROS_TYPE(test_attributes_2)
 	ADD_INTROS_ITEM_USER_NAME(x, MAKE_USER_NAME("x", "", true))
 	ADD_INTROS_ITEM_USER_NAME(name, MAKE_USER_NAME("name", "", true))
 	ADD_INTROS_ITEM_USER_NAME(vs, MAKE_USER_NAME("vs", "all_vs", false))
 	ADD_INTROS_ITEM_USER_NAME(sd, MAKE_USER_NAME("sd", "all_sd", false))
-END_INTROS_TYPE(test_attributes)
+END_INTROS_TYPE(test_attributes_2)
 
-bool operator==(const test_attributes& lhs, const test_attributes& rhs)
+bool operator==(const test_attributes_2& lhs, const test_attributes_2& rhs)
 {
 	return
 		lhs.x == rhs.x &&
@@ -432,7 +432,7 @@ namespace UnitTest
 		TEST_METHOD(test_intros_struct_attributes)
 		{
 			string s = R"(
-<test_attributes x="1234" name="hello">
+<test_attributes_2 x="1234" name="hello">
 	<all_vs>
 		<vs>1</vs>
 		<vs>708</vs>
@@ -443,9 +443,9 @@ namespace UnitTest
 		<sd>-108</sd>
 		<sd>456</sd>
 	</all_sd>
-</test_attributes>
+</test_attributes_2>
 )";
-			test_attributes val;
+			test_attributes_2 val;
 			val.x = 1234;
 			val.name = "hello";
 			val.vs = vector<string>{ "1", "708", "789" };
