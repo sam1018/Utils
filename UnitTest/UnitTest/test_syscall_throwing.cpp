@@ -36,7 +36,6 @@ namespace UnitTest
 	TEST_CLASS(UnitTest)
 	{
 	public:
-		
 		TEST_METHOD(test_syscall_throwing)
 		{
 			// will throw
