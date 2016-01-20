@@ -147,7 +147,9 @@ namespace utils { namespace intros_ptree { namespace details
 		{
 			std::string last_path;
 			boost::property_tree::ptree empty_tree;
-			auto source = tree.get_child(get_path_last_but(boost::property_tree::path(name), last_path), empty_tree);
+			auto source = tree.get_child(
+							get_path_last_but(boost::property_tree::path(name), last_path), 
+							empty_tree);
 
 			for (auto source_it = source.begin(); source_it != source.end(); ++source_it)
 			{
@@ -211,5 +213,22 @@ namespace utils { namespace intros_ptree { namespace details
 		details::intros_from_ptree_impl(ret_intros.items, tree.get_child(ret_intros.name));
 
 		return ret;
+	}
+	template<typename T, std::enable_if_t<!details::has_intros<T>::value, int> = 0>
+	boost::property_tree::ptree make_ptree_impl(T)
+	{
+		static_assert(0, "Use intros_type for introspection support");
+	}
+
+	template<typename T, std::enable_if_t<details::has_intros<T>::value, int> = 0>
+	boost::property_tree::ptree make_ptree_impl(const T& in)
+	{
+		auto intros_type = get_intros_type(in);
+		boost::property_tree::ptree tree, subtree;
+
+		details::intros_to_ptree_impl(subtree, intros_type);
+
+		tree.add_child(intros_type.name, subtree);
+		return tree;
 	}
 }}}

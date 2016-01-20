@@ -30,16 +30,9 @@
 		}																	\
 	}																		\
 	template<EXPAND_TYPE_PARAMS(__VA_ARGS__)>								\
-	struct name base														\
-	{																		\
-	static constexpr bool value = decltype(									\
-		exprtest::details::EXPR_TEST_NAME_IMPL1(name)<__VA_ARGS__>(nullptr)	\
-		)::value;															\
-	};
+	struct name : decltype(													\
+		exprtest::details::EXPR_TEST_NAME_IMPL1(name)<__VA_ARGS__>(nullptr))\
+	{};
 
-
-#define SEMICOLON :
-
-#define GET_BASE(base) BOOST_PP_CAT(SEMICOLON, base)
 
 #define GET_TEST(ind_test, ...)	ind_test<__VA_ARGS__>

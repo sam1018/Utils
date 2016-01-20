@@ -16,22 +16,10 @@
 
 namespace utils { namespace intros_ptree 
 {
-	template<typename T, std::enable_if_t<!details::has_intros<T>::value, int> = 0>
-	boost::property_tree::ptree make_ptree(T)
-	{
-		static_assert(0, "Use intros_type for introspection support");
-	}
-
-	template<typename T, std::enable_if_t<details::has_intros<T>::value, int> = 0>
+	template<typename T>
 	boost::property_tree::ptree make_ptree(const T& in)
 	{
-		auto intros_type = get_intros_type(in);
-		boost::property_tree::ptree tree, subtree;
-
-		details::intros_to_ptree_impl(subtree, intros_type);
-
-		tree.add_child(intros_type.name, subtree);
-		return tree;
+		return details::make_ptree_impl(in);
 	}
 
 	template<typename T>
