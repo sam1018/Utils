@@ -33,10 +33,6 @@
 //Adding required boost header
 #include <boost/test/unit_test.hpp>
 
-#ifndef TEST_FILES_PATH
-#error Please set test files folder path
-#endif
-
-std::string get_test_file_full_path(std::string filename);
+std::string get_test_file_full_path(const std::string& filename);
 
 #endif // __STDAFX_H__

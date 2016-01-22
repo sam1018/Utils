@@ -2,6 +2,7 @@
 
 #include <functional>
 #include <type_traits>
+#include <Windows.h>
 
 namespace utils
 {
