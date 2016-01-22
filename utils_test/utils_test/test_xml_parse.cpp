@@ -1,12 +1,10 @@
 #include "stdafx.h"
-#include "CppUnitTest.h"
 #include "intros_ptree.hpp"
 #include <boost\property_tree\ptree.hpp>
 #include <boost\property_tree\xml_parser.hpp>
 
 using namespace std;
 using namespace boost::property_tree;
-using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 using namespace utils::intros_ptree;
 
 struct book
@@ -33,13 +31,13 @@ END_INTROS_TYPE(book)
 bool operator==(const book& lhs, const book& rhs)
 {
 	return (
-		lhs.id				== rhs.id			&&
-		lhs.author			== rhs.author		&&
-		lhs.title			== rhs.title		&&
-		lhs.genre			== rhs.genre		&&
-		lhs.price			== rhs.price		&&
-		lhs.publish_date	== rhs.publish_date &&
-		lhs.description		== rhs.description
+		lhs.id == rhs.id			&&
+		lhs.author == rhs.author		&&
+		lhs.title == rhs.title		&&
+		lhs.genre == rhs.genre		&&
+		lhs.price == rhs.price		&&
+		lhs.publish_date == rhs.publish_date &&
+		lhs.description == rhs.description
 		);
 }
 
@@ -74,7 +72,7 @@ catalog get_actual_value()
 		book{ "bk112", "Galos, Mike",			"Visual Studio 7: A Comprehensive Guide",	"Computer",			"49.95",	"2001-04-16", "\n      Microsoft Visual Studio 7 is explored in depth,\n      looking at how Visual Basic, Visual C++, C#, and ASP+ are\n      integrated into a comprehensive development\n      environment.\n    " }
 	};
 
-	return catalog{books};
+	return catalog{ books };
 }
 
 struct debug
@@ -95,47 +93,38 @@ bool operator==(const debug& lhs, const debug& rhs)
 	return lhs.filename == rhs.filename && lhs.level == rhs.level && lhs.modules == rhs.modules;
 }
 
-namespace UnitTest
+BOOST_AUTO_TEST_CASE(test_load_xml)
 {
-	TEST_CLASS(UnitTest)
-	{
-	public:
-		TEST_METHOD(test_load_xml)
-		{
-			ptree tree;
-			read_xml("../UnitTest/debug_settings.xml", tree);
+	ptree tree;
+	read_xml(get_test_file_full_path("debug_settings.xml"), tree);
 
-			auto in = make_intros_object<debug>(tree);
+	auto in = make_intros_object<debug>(tree);
 
-			Assert::IsTrue(
-				in.filename == "debug.log" &&
-				in.level == 2 &&
-				in.modules == vector<string>{"Finance", "Admin", "HR"}
-			);
+	vector<string> res{ "Finance", "Admin", "HR" };
 
-			auto tree2 = make_ptree(in);
-			
-			auto out = make_intros_object<debug>(tree2);
+	BOOST_CHECK(in.filename == "debug.log" && in.level == 2 && in.modules == res);
 
-			Assert::IsTrue(in == out);
-		}
+	auto tree2 = make_ptree(in);
 
-		TEST_METHOD(test_books_xml)
-		{
-			ptree tree;
-			read_xml("../UnitTest/books.xml", tree);
+	auto out = make_intros_object<debug>(tree2);
 
-			auto in = make_intros_object<catalog>(tree);
+	BOOST_CHECK(in == out);
+}
 
-			auto actual_value = get_actual_value();
+BOOST_AUTO_TEST_CASE(test_books_xml)
+{
+	ptree tree;
+	read_xml(get_test_file_full_path("books.xml"), tree);
 
-			Assert::IsTrue(in == actual_value);
+	auto in = make_intros_object<catalog>(tree);
 
-			ptree tree2 = make_ptree(in);
+	auto actual_value = get_actual_value();
 
-			auto out = make_intros_object<catalog>(tree2);
+	BOOST_CHECK(in == actual_value);
 
-			Assert::IsTrue(in == out);
-		}
-	};
+	ptree tree2 = make_ptree(in);
+
+	auto out = make_intros_object<catalog>(tree2);
+
+	BOOST_CHECK(in == out);
 }

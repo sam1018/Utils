@@ -1,13 +1,10 @@
 #include "stdafx.h"
-#include "CppUnitTest.h"
 #include "intros_ptree.hpp"
 #include <boost\property_tree\xml_parser.hpp>
 
 using namespace std;
 using namespace boost::property_tree;
-using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 using namespace utils::intros_ptree;
-
 
 
 struct test_simple
@@ -18,10 +15,10 @@ struct test_simple
 	string x;
 };
 BEGIN_INTROS_TYPE(test_simple)
-ADD_INTROS_ITEM(a)
-ADD_INTROS_ITEM(f)
-ADD_INTROS_ITEM(d)
-ADD_INTROS_ITEM(x)
+	ADD_INTROS_ITEM(a)
+	ADD_INTROS_ITEM(f)
+	ADD_INTROS_ITEM(d)
+	ADD_INTROS_ITEM(x)
 END_INTROS_TYPE(test_simple)
 
 
@@ -35,12 +32,12 @@ struct test_attributes
 	string att2;
 };
 BEGIN_INTROS_TYPE(test_attributes)
-ADD_INTROS_ITEM(a)
-ADD_INTROS_ITEM(f)
-ADD_INTROS_ITEM(d)
-ADD_INTROS_ITEM(x)
-ADD_INTROS_ITEM_USER_NAME(att1, MAKE_USER_NAME("att1", "", true))
-ADD_INTROS_ITEM_USER_NAME(att2, MAKE_USER_NAME("att2", "", true))
+	ADD_INTROS_ITEM(a)
+	ADD_INTROS_ITEM(f)
+	ADD_INTROS_ITEM(d)
+	ADD_INTROS_ITEM(x)
+	ADD_INTROS_ITEM_USER_NAME(att1, MAKE_USER_NAME("att1", "", true))
+	ADD_INTROS_ITEM_USER_NAME(att2, MAKE_USER_NAME("att2", "", true))
 END_INTROS_TYPE(test_attributes)
 
 
@@ -62,19 +59,19 @@ struct test_scope
 };
 
 BEGIN_INTROS_TYPE(test_scope)
-ADD_INTROS_ITEM(a)
-ADD_INTROS_ITEM(f)
-ADD_INTROS_ITEM(d)
-ADD_INTROS_ITEM(x)
-ADD_INTROS_ITEM_USER_NAME(att1, MAKE_USER_NAME("att1", "", true))
-ADD_INTROS_ITEM_USER_NAME(att2, MAKE_USER_NAME("att2", "", true))
+	ADD_INTROS_ITEM(a)
+	ADD_INTROS_ITEM(f)
+	ADD_INTROS_ITEM(d)
+	ADD_INTROS_ITEM(x)
+	ADD_INTROS_ITEM_USER_NAME(att1, MAKE_USER_NAME("att1", "", true))
+	ADD_INTROS_ITEM_USER_NAME(att2, MAKE_USER_NAME("att2", "", true))
 
-ADD_INTROS_ITEM_USER_NAME(a_newscope, MAKE_USER_NAME("a_newscope", "newscope", false))
-ADD_INTROS_ITEM_USER_NAME(f_newscope, MAKE_USER_NAME("f_newscope", "newscope", false))
-ADD_INTROS_ITEM_USER_NAME(d_newscope, MAKE_USER_NAME("d_newscope", "newscope", false))
-ADD_INTROS_ITEM_USER_NAME(x_newscope, MAKE_USER_NAME("x_newscope", "newscope", false))
-ADD_INTROS_ITEM_USER_NAME(att1_newscope, MAKE_USER_NAME("att1_newscope", "newscope", true))
-ADD_INTROS_ITEM_USER_NAME(att2_newscope, MAKE_USER_NAME("att2_newscope", "newscope", true))
+	ADD_INTROS_ITEM_USER_NAME(a_newscope, MAKE_USER_NAME("a_newscope", "newscope", false))
+	ADD_INTROS_ITEM_USER_NAME(f_newscope, MAKE_USER_NAME("f_newscope", "newscope", false))
+	ADD_INTROS_ITEM_USER_NAME(d_newscope, MAKE_USER_NAME("d_newscope", "newscope", false))
+	ADD_INTROS_ITEM_USER_NAME(x_newscope, MAKE_USER_NAME("x_newscope", "newscope", false))
+	ADD_INTROS_ITEM_USER_NAME(att1_newscope, MAKE_USER_NAME("att1_newscope", "newscope", true))
+	ADD_INTROS_ITEM_USER_NAME(att2_newscope, MAKE_USER_NAME("att2_newscope", "newscope", true))
 END_INTROS_TYPE(test_scope)
 
 
@@ -84,7 +81,7 @@ struct test_container
 };
 
 BEGIN_INTROS_TYPE(test_container)
-ADD_INTROS_ITEM(vs)
+	ADD_INTROS_ITEM(vs)
 END_INTROS_TYPE(test_container)
 
 
@@ -94,7 +91,7 @@ struct test_container_with_scope
 };
 
 BEGIN_INTROS_TYPE(test_container_with_scope)
-ADD_INTROS_ITEM_USER_NAME(vs, MAKE_USER_NAME("vs", "scoped", false))
+	ADD_INTROS_ITEM_USER_NAME(vs, MAKE_USER_NAME("vs", "scoped", false))
 END_INTROS_TYPE(test_container_with_scope)
 
 
@@ -104,7 +101,7 @@ struct test_nested
 };
 
 BEGIN_INTROS_TYPE(test_nested)
-ADD_INTROS_ITEM(tc)
+	ADD_INTROS_ITEM(tc)
 END_INTROS_TYPE(test_nested)
 
 struct test_nested_2
@@ -113,7 +110,7 @@ struct test_nested_2
 };
 
 BEGIN_INTROS_TYPE(test_nested_2)
-ADD_INTROS_ITEM(tc)
+	ADD_INTROS_ITEM(tc)
 END_INTROS_TYPE(test_nested_2)
 
 
@@ -126,10 +123,10 @@ struct test_more_nested
 };
 
 BEGIN_INTROS_TYPE(test_more_nested)
-ADD_INTROS_ITEM(tc1)
-ADD_INTROS_ITEM(tc2)
-ADD_INTROS_ITEM(tc3)
-ADD_INTROS_ITEM(tc4)
+	ADD_INTROS_ITEM(tc1)
+	ADD_INTROS_ITEM(tc2)
+	ADD_INTROS_ITEM(tc3)
+	ADD_INTROS_ITEM(tc4)
 END_INTROS_TYPE(test_more_nested)
 
 
@@ -255,46 +252,39 @@ string expected = R"(<?xml version="1.0" encoding="utf-8"?>
 )";
 
 
-namespace UnitTest
+BOOST_AUTO_TEST_CASE(test_intros_ptree_write_xml)
 {
-	TEST_CLASS(UT_INTROS_PTREE_TEST_TAGS)
-	{
-	public:
-		TEST_METHOD(test_intros_ptree_write_xml)
-		{
-			stringstream ss;
+	stringstream ss;
 
-			print_xml<test_simple>(ss);
+	print_xml<test_simple>(ss);
 
-			print_xml<test_attributes>(ss);
+	print_xml<test_attributes>(ss);
 
-			print_xml<test_scope>(ss);
+	print_xml<test_scope>(ss);
 
-			test_container ob_1;
-			ob_1.vs.resize(4);
-			print_xml<test_container>(ss, ob_1);
+	test_container ob_1;
+	ob_1.vs.resize(4);
+	print_xml<test_container>(ss, ob_1);
 
-			test_container_with_scope ob_2;
-			ob_2.vs.resize(3);
-			print_xml<test_container_with_scope>(ss, ob_2);
+	test_container_with_scope ob_2;
+	ob_2.vs.resize(3);
+	print_xml<test_container_with_scope>(ss, ob_2);
 
-			test_nested ob_3;
-			ob_3.tc.vs.resize(2);
-			print_xml<test_nested>(ss, ob_3);
+	test_nested ob_3;
+	ob_3.tc.vs.resize(2);
+	print_xml<test_nested>(ss, ob_3);
 
-			test_nested_2 ob_4;
-			ob_4.tc.vs.resize(3);
-			print_xml<test_nested_2>(ss, ob_4);
+	test_nested_2 ob_4;
+	ob_4.tc.vs.resize(3);
+	print_xml<test_nested_2>(ss, ob_4);
 
-			test_more_nested ob;
-			ob.tc1.resize(3);
-			ob.tc2.resize(4);
+	test_more_nested ob;
+	ob.tc1.resize(3);
+	ob.tc2.resize(4);
 
-			print_xml<test_more_nested>(ss, ob);
+	print_xml<test_more_nested>(ss, ob);
 
-			string actual = ss.str();
+	string actual = ss.str();
 
-			Assert::AreEqual(expected, actual);
-		}
-	};
+	BOOST_CHECK(expected == actual);
 }

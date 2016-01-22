@@ -37,3 +37,6 @@
 *.iobj
 *.log
 *.idb
+utils_test/utils_test/utils_test.vcxproj.user
+utils_test/x64/Debug/utils_test.exe.test.log.xml
+utils_test/x64/Debug/utils_test.exe.test.report.xml

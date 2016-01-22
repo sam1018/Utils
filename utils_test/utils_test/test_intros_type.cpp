@@ -1,10 +1,8 @@
 #include "stdafx.h"
-#include "CppUnitTest.h"
 #include "intros_type.hpp"
 #include <map>
 #include <vector>
 
-using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 using namespace std;
 
 struct test_empty
@@ -144,82 +142,76 @@ BEGIN_INTROS_TYPE(test_nest_intros)
 	ADD_INTROS_ITEM(s)
 END_INTROS_TYPE(test_nest_intros)
 
-namespace UnitTest
+
+BOOST_AUTO_TEST_CASE(test_intros)
 {
-	TEST_CLASS(UnitTest)
-	{
-	public:
-		TEST_METHOD(test_intros)
-		{
-			test ob;
+	test ob;
 
-			set_test_val(ob);
+	set_test_val(ob);
 
-			auto t = get_intros_type(ob);
+	auto t = get_intros_type(ob);
 
-			// any modification in ob will be reflected in t
+	// any modification in ob will be reflected in t
 
-			Assert::IsTrue(compare_test_with_intros(ob, t));
+	BOOST_CHECK(compare_test_with_intros(ob, t));
 
-			// the opposite is also true
-			// any change in t will be reflected in ob
+	// the opposite is also true
+	// any change in t will be reflected in ob
 
-			get<0>(t.items).val = 12;
+	get<0>(t.items).val = 12;
 
-			Assert::AreEqual(ob.d, 12);
-		}
+	BOOST_CHECK(ob.d == 12);
+}
 
-		TEST_METHOD(test_intros_for_const)
-		{
-			const test ob = get_test_val();
+BOOST_AUTO_TEST_CASE(test_intros_for_const)
+{
+	const test ob = get_test_val();
 
-			auto t = get_intros_type(ob);
+	auto t = get_intros_type(ob);
 
-			// We can read from t
-			Assert::AreEqual(get<0>(t.items).val, 12);
+	// We can read from t
+	BOOST_CHECK(get<0>(t.items).val == 12);
 
-			// but we can't modify t.items
-			// the following won't compile
-			//get<0>(t.items).val = 14;
-		}
+	// but we can't modify t.items
+	// the following won't compile
+	//get<0>(t.items).val = 14;
+}
 
-		TEST_METHOD(test_intros_change_name)
-		{
-			test ob;
-			auto t = get_intros_type(ob);
-			auto t2 = get_intros_type(ob);
+BOOST_AUTO_TEST_CASE(test_intros_change_name)
+{
+	test ob;
+	auto t = get_intros_type(ob);
+	auto t2 = get_intros_type(ob);
 
-			t.name = "changed_name";
-			get<0>(t.items).name = "another name";
-			
-			// changing names have impact only that instance of t
-			Assert::AreNotEqual(t.name, t2.name);
-			Assert::AreNotEqual(get<0>(t.items).name, get<0>(t2.items).name);
-		}
+	t.name = "changed_name";
+	get<0>(t.items).name = "another name";
 
-		TEST_METHOD(test_intros_diff_name)
-		{
-			test_diff_name ob;
+	// changing names have impact only that instance of t
+	BOOST_CHECK(!(t.name == t2.name));
+	BOOST_CHECK(!(get<0>(t.items).name == get<0>(t2.items).name));
+}
 
-			Assert::AreEqual(get_intros_type(ob).name, "another name"s);
-		}
+BOOST_AUTO_TEST_CASE(test_intros_diff_name)
+{
+	test_diff_name ob;
 
-		TEST_METHOD(test_intros_diff_item_name)
-		{
-			test_diff_item_name ob;
+	BOOST_CHECK(get_intros_type(ob).name == "another name"s);
+}
 
-			Assert::AreEqual(get<0>(get_intros_type(ob).items).name, "diff item name"s);
-		}
+BOOST_AUTO_TEST_CASE(test_intros_diff_item_name)
+{
+	test_diff_item_name ob;
 
-		TEST_METHOD(test_intros_nested)
-		{
-			test_nest_intros ob;
+	BOOST_CHECK(get<0>(get_intros_type(ob).items).name == "diff item name"s);
+}
 
-			ob.ob1.s = "ABCD";
+BOOST_AUTO_TEST_CASE(test_intros_nested)
+{
+	test_nest_intros ob;
 
-			auto nested_intros = get_intros_type(ob.ob1);
+	ob.ob1.s = "ABCD";
 
-			Assert::AreEqual((get<2>(nested_intros.items)).val, ob.ob1.s);
-		}
-	};
+	auto nested_intros = get_intros_type(ob.ob1);
+
+	BOOST_CHECK((get<2>(nested_intros.items)).val == ob.ob1.s);
 }
