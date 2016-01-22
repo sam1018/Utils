@@ -2,6 +2,7 @@
 
 #include <tuple>
 #include <string>
+#include "intros_type.hpp"
 
 namespace utils { namespace intros { namespace details
 {
@@ -11,7 +12,7 @@ namespace utils { namespace intros { namespace details
 	template<typename T>
 	auto make_intros_item(const std::string& name, T& x, non_const_version)
 	{
-		return intros_item<T>{name, x};
+		return intros::intros_item<T>{name, x};
 	}
 
 	template<typename T>

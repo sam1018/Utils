@@ -4,7 +4,7 @@
 #include <string>
 #include <type_traits>
 #include <boost\preprocessor.hpp>
-#include "details\intros_type_details.hpp"
+//#include "details\intros_type_details.hpp"
 
 
 #define BEGIN_INTROS_TYPE(type)										\
@@ -61,3 +61,32 @@ namespace utils { namespace intros
 		T& val;
 	};
 }}
+
+
+namespace utils {
+	namespace intros {
+		namespace details
+		{
+			struct const_version {};
+			struct non_const_version {};
+
+			template<typename T>
+			auto make_intros_item(const std::string& name, T& x, non_const_version)
+			{
+				return intros::intros_item<T>{name, x};
+			}
+
+			template<typename T>
+			auto make_intros_item(const std::string& name, T& x, const_version)
+			{
+				return intros_item<const T>{name, x};
+			}
+
+			template<typename... T>
+			auto make_intros_type(const std::string& name, T... params)
+			{
+				return intros_type<decltype(params)...>{name, std::tuple<decltype(params)...>{params...}};
+			}
+		}
+	}
+}

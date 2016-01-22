@@ -95,7 +95,7 @@ namespace utils { namespace intros_ptree { namespace details
 		void add_to_tree_impl(boost::property_tree::ptree& tree, const std::string& name, const T& val, tags::item_has_input_iterator)
 		{
 			std::for_each(val.begin(), val.end(), [&val, &tree, &name](const auto& x) {
-				add_to_tree_impl(tree, name, x, item_category_read_intros<T::value_type>());
+				add_to_tree_impl(tree, name, x, item_category_read_intros<typename T::value_type>());
 			});
 		}
 		template<typename T>
@@ -155,8 +155,8 @@ namespace utils { namespace intros_ptree { namespace details
 			{
 				if (source_it->first == last_path)
 				{
-					T::value_type item;
-					add_to_intros_impl(item, "", source_it->second, item_category_write_intros<T::value_type>());
+					typename T::value_type item;
+					add_to_intros_impl(item, "", source_it->second, item_category_write_intros<typename T::value_type>());
 					std::inserter(val, val.end()) = item;
 				}
 			}
@@ -208,7 +208,7 @@ namespace utils { namespace intros_ptree { namespace details
 	{
 		T ret;
 
-		auto& ret_intros = get_intros_type(ret);
+		auto ret_intros = get_intros_type(ret);
 
 		details::intros_from_ptree_impl(ret_intros.items, tree.get_child(ret_intros.name));
 
