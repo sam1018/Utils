@@ -135,7 +135,7 @@ namespace utils { namespace intros_ptree { namespace details
 		template<typename T>
 		void add_to_intros_impl(T& val, const std::string& name, const boost::property_tree::ptree& tree, tags::item_is_array)
 		{
-			static_assert(false, "Array not supported for intros_type");
+			static_assert(!std::is_void<T>::value, "Array not supported for intros_type");
 		}
 		template<typename T>
 		void add_to_intros_impl(T& val, const std::string& name, const boost::property_tree::ptree& tree, tags::item_can_stream_extract)
