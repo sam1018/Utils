@@ -141,7 +141,8 @@ namespace utils { namespace intros_ptree { namespace details
 		void add_to_intros_impl(T& val, const std::string& name, const boost::property_tree::ptree& tree, tags::item_has_intros)
 		{
 			auto& subtree = (name == "" ? tree : tree.get_child(name));
-			intros_from_ptree_impl(get_intros_type(val).items, subtree);
+			auto intros_type = get_intros_type(val);
+			intros_from_ptree_impl(intros_type.items, subtree);
 		}
 		template<typename T>
 		void add_to_intros_impl(T& val, const std::string& name, const boost::property_tree::ptree& tree, tags::item_is_array)
