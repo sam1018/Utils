@@ -5,12 +5,12 @@
 #define BOOST_TEST_MODULE MyTest
 
 #include "stdafx.h"
+#include <string>
 #include <exception>
-#include <filesystem>
-#include <system_error>
+#include <boost/filesystem.hpp>
 
 using namespace std;
-using namespace std::tr2::sys;
+using namespace boost::filesystem;
 
 
 string get_env(const string& env)
@@ -31,7 +31,7 @@ string get_test_file_full_path(const string& filename)
 	p /= filename;
 
 	if (!exists(p))
-		throw filesystem_error(p.string() + ": File not found. Did you set TEST_FILES_PATH correctly?");
+		throw logic_error(p.string() + ": don't exist. Did you set TEST_FILES_PATH environment variable correctly?");
 
 	return p.string();
 }
