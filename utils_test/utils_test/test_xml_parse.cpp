@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "intros_ptree.hpp"
-#include <boost\property_tree\ptree.hpp>
-#include <boost\property_tree\xml_parser.hpp>
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/xml_parser.hpp>
 
 using namespace std;
 using namespace boost::property_tree;

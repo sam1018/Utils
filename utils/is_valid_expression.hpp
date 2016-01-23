@@ -1,6 +1,6 @@
 #pragma once
 
-#include "details\is_valid_expression_details.hpp"
+#include "details/is_valid_expression_details.hpp"
 
 #define IMPLEMENT_EXPR_TEST(name, test, ...)	\
 	IMPLEMENT_EXPR_TEST_IMPL(name, ~, test, __VA_ARGS__)

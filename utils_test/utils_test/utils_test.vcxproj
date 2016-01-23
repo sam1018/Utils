@@ -150,7 +150,15 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\utils\details\intros_ptree_details.hpp" />
+    <ClInclude Include="..\..\utils\details\intros_type_details.hpp" />
+    <ClInclude Include="..\..\utils\details\is_valid_expression_details.hpp" />
+    <ClInclude Include="..\..\utils\intros_ptree.hpp" />
+    <ClInclude Include="..\..\utils\intros_type.hpp" />
+    <ClInclude Include="..\..\utils\is_valid_expression.hpp" />
+    <ClInclude Include="..\..\utils\pp_variadic_transform.hpp" />
     <ClInclude Include="..\..\utils\syscall_throwing.hpp" />
+    <ClInclude Include="..\..\utils\util_traits.hpp" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>

@@ -1,8 +1,8 @@
 #pragma once
 
 
-#include "details\intros_ptree_details.hpp"
-#include <boost\property_tree\ptree.hpp>
+#include "details/intros_ptree_details.hpp"
+#include <boost/property_tree/ptree.hpp>
 
 
 #define MAKE_USER_NAME(name, scope, is_attribute)		\

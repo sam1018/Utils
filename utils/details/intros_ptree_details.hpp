@@ -4,9 +4,9 @@
 #include <string>
 #include <algorithm>
 #include <type_traits>
-#include <boost\property_tree\ptree.hpp>
-#include <boost\fusion\adapted\std_tuple.hpp>
-#include <boost\fusion\algorithm\iteration\for_each.hpp>
+#include <boost/property_tree/ptree.hpp>
+#include <boost/fusion/adapted/std_tuple.hpp>
+#include <boost/fusion/algorithm/iteration/for_each.hpp>
 #include "intros_type.hpp"
 #include "util_traits.hpp"
 #include "is_valid_expression.hpp"
