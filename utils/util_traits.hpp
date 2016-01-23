@@ -4,8 +4,12 @@
 
 namespace utils { namespace traits
 {
+	//<Available from C++17>
+	template <bool B>
+	using bool_constant = std::integral_constant<bool, B>;
+
 	template<class B>
-	struct negation : std::bool_constant<!B::value> { };
+	struct negation : bool_constant<!B::value> { };
 
 	template<class...> struct disjunction : std::false_type { };
 	template<class B1> struct disjunction<B1> : B1 { };
@@ -16,6 +20,7 @@ namespace utils { namespace traits
 	template<class B1> struct conjunction<B1> : B1 { };
 	template<class B1, class... Bn>
 	struct conjunction<B1, Bn...> : std::conditional_t<B1::value != false, conjunction<Bn...>, B1> {};
+	//</Available from C++17>
 
 	template<class...> struct get_tag {};
 	template<class def_tag> struct get_tag<def_tag> : def_tag {};
