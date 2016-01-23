@@ -30,7 +30,7 @@ IMPLEMENT_EXPR_TEST(can_stream_insert, decltype(declval<stream&>() >> declval<T&
 IMPLEMENT_EXPR_TEST(has_int_var, decltype(&T::int_var), T)
 
 template<typename T, typename U>
-using indirect_test_add_sub = void_t<decltype(declval<T&>() + declval<U&>()), decltype(declval<T&>() - declval<U&>())>;
+using indirect_test_add_sub = decltype(declval<T&>() + declval<U&>(), declval<T&>() - declval<U&>());
 
 IMPLEMENT_EXPR_TEST_INDIRECT(can_add_sub, indirect_test_add_sub, T, U)
 
