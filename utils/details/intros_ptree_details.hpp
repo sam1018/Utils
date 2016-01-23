@@ -217,7 +217,7 @@ namespace utils { namespace intros_ptree { namespace details
 	template<typename T, std::enable_if_t<!details::has_intros<T>::value, int> = 0>
 	boost::property_tree::ptree make_ptree_impl(T)
 	{
-		static_assert(0, "Use intros_type for introspection support");
+		static_assert(!std::is_void<T>::value, "Use intros_type for introspection support");
 	}
 
 	template<typename T, std::enable_if_t<details::has_intros<T>::value, int> = 0>
