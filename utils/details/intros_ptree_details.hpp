@@ -169,7 +169,7 @@ namespace utils { namespace intros_ptree { namespace details
 		template<typename T>
 		void add_to_intros(T& x, const boost::property_tree::ptree& tree)
 		{
-			using t = remove_reference_t<decltype(remove_reference_t<T>::val)>;
+			using t = std::remove_reference_t<decltype(std::remove_reference_t<T>::val)>;
 			add_to_intros_impl(x.val, x.name, tree, item_category_write_intros<t>());
 		}
 	}
