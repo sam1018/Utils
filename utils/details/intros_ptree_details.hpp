@@ -84,7 +84,7 @@ namespace utils { namespace intros_ptree { namespace details
 		template<typename T>
 		void add_to_tree_impl(boost::property_tree::ptree& tree, const std::string& name, const T& val, tags::item_is_array)
 		{
-			static_assert(false, "Array not supported for intros_type");
+			static_assert(!std::is_void<T>::value, "Array not supported for intros_type");
 		}
 		template<typename T>
 		void add_to_tree_impl(boost::property_tree::ptree& tree, const std::string& name, const T& val, tags::item_can_stream_insert)
@@ -101,7 +101,7 @@ namespace utils { namespace intros_ptree { namespace details
 		template<typename T>
 		void add_to_tree_impl(boost::property_tree::ptree& tree, const std::string& name, const T& val, tags::item_not_supported)
 		{
-			static_assert(false, "Unsupported type for intros_type");
+			static_assert(!std::is_void<T>::value, "Unsupported type for intros_type");
 		}
 		template<typename T>
 		void add_to_tree(boost::property_tree::ptree& tree, const T& x)
@@ -164,7 +164,7 @@ namespace utils { namespace intros_ptree { namespace details
 		template<typename T>
 		void add_to_intros_impl(T& val, const std::string& name, const boost::property_tree::ptree& tree, tags::item_not_supported)
 		{
-			static_assert(false, "Unsupported type for intros_type");
+			static_assert(!std::is_void<T>::value, "Unsupported type for intros_type");
 		}
 		template<typename T>
 		void add_to_intros(T& x, const boost::property_tree::ptree& tree)
@@ -194,13 +194,13 @@ namespace utils { namespace intros_ptree { namespace details
 	template<typename T>
 	T make_intros_object_impl(const boost::property_tree::ptree& tree, obj_tags::has_no_intros)
 	{
-		static_assert(false, "Object has no intros support");
+		static_assert(!std::is_void<T>::value, "Object has no intros support");
 	}
 
 	template<typename T>
 	T make_intros_object_impl(const boost::property_tree::ptree& tree, obj_tags::has_no_def_ctor)
 	{
-		static_assert(false, "Cannot make object with no default constructor");
+		static_assert(!std::is_void<T>::value, "Cannot make object with no default constructor");
 	}
 
 	template<typename T>
