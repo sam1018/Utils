@@ -11,6 +11,14 @@
 #include "util_traits.hpp"
 #include "is_valid_expression.hpp"
 
+// forward declarations begin
+namespace utils { namespace intros_ptree { namespace details 
+{
+	template<typename T>
+	void intros_to_ptree_impl(boost::property_tree::ptree& tree, const T& in);
+} } }
+// forward declarations end
+
 // item tag conditions
 namespace utils { namespace intros_ptree { namespace details
 {
