@@ -5,6 +5,7 @@
 #define BOOST_TEST_MODULE MyTest
 
 #include "stdafx.h"
+#include <stdlib.h>
 #include <string>
 #include <exception>
 #include <boost/filesystem.hpp>
@@ -15,14 +16,15 @@ using namespace boost::filesystem;
 
 string get_env(const string& env)
 {
-	char *c_s;
-	auto ret = _dupenv_s(&c_s, nullptr, env.c_str());
-	if (c_s == nullptr)
-		throw logic_error("Environment variable "s + env + " is not set.");
-	string s(c_s);
-	free(c_s);
+	// getenv is depracated for microsoft compiler
+#pragma warning(disable:4996)
+	auto c_res = getenv(env.c_str());
+#pragma warning(default:4996)
 
-	return s;
+	if(!c_res)
+		throw logic_error("Environment variable "s + env + " is not set.");
+
+	return c_res;
 }
 
 string get_test_file_full_path(const string& filename)
