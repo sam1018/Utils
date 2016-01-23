@@ -16,6 +16,9 @@ namespace utils { namespace intros_ptree { namespace details
 {
 	template<typename T>
 	void intros_to_ptree_impl(boost::property_tree::ptree& tree, const T& in);
+
+	template<typename... T>
+	void intros_from_ptree_impl(std::tuple<T...>& out, const boost::property_tree::ptree& tree);
 } } }
 // forward declarations end
 
