@@ -9,10 +9,23 @@
 #include <string>
 #include <exception>
 #include <boost/filesystem.hpp>
+#include <Windows.h>
 
 using namespace std;
 using namespace boost::filesystem;
 
+string get_default_test_files_dir_path()
+{
+	char pBuf[MAX_PATH + 1];
+	int bytes = GetModuleFileNameA(NULL, pBuf, MAX_PATH);
+	path p(pBuf);
+	p.remove_filename();
+	p /= "../../test_files/";
+	if (!exists(p))
+		throw logic_error("test_files path not found. Please set TEST_FILES_PATH environment variable.");
+
+	return p.string();
+}
 
 string get_env(const string& env)
 {
@@ -21,10 +34,7 @@ string get_env(const string& env)
 	auto c_res = getenv(env.c_str());
 #pragma warning(default:4996)
 
-	if(!c_res)
-		throw logic_error("Environment variable "s + env + " is not set.");
-
-	return c_res;
+	return (c_res ? c_res : get_default_test_files_dir_path());
 }
 
 string get_test_file_full_path(const string& filename)
