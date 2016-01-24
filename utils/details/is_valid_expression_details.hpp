@@ -15,7 +15,7 @@
 #define EXPR_TEST_NAME_IMPL1(name)	\
 	BOOST_PP_CAT(name, _impl1)
 
-#define IMPLEMENT_EXPR_TEST_IMPL(name, base, test, ...)						\
+#define IMPLEMENT_EXPR_TEST_IMPL(name, test, ...)							\
 	namespace exprtest														\
 	{																		\
 		namespace details													\
@@ -33,6 +33,5 @@
 	struct name : decltype(													\
 		exprtest::details::EXPR_TEST_NAME_IMPL1(name)<__VA_ARGS__>(nullptr))\
 	{};
-
 
 #define GET_TEST(ind_test, ...)	ind_test<__VA_ARGS__>
