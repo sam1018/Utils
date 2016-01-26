@@ -11,6 +11,10 @@
 #include <boost/filesystem.hpp>
 #include <Windows.h>
 
+#ifndef _MSC_VER
+#include <boost/test/included/unit_test.hpp>
+#endif
+
 using namespace std;
 using namespace boost::filesystem;
 
