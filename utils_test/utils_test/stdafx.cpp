@@ -18,7 +18,7 @@ using namespace std;
 using namespace boost::filesystem;
 
 
-#ifdef _WIN32
+#if defined(_WIN32)
 
 #include <Windows.h>
 std::string get_exe_full_path()
@@ -28,7 +28,7 @@ std::string get_exe_full_path()
 	return pBuf;
 }
 
-#elif
+#else
 
 #include <unistd.h>
 std::string get_exe_full_path()
