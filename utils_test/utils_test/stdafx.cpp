@@ -18,7 +18,7 @@ using namespace std;
 using namespace boost::filesystem;
 
 
-#ifdef _MSC_VER
+#ifdef _WIN32
 
 #include <Windows.h>
 std::string get_exe_full_path()
