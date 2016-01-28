@@ -157,16 +157,7 @@ BOOST_AUTO_TEST_CASE(test_xml_test_customer_orders)
 	ptree tree;
 	read_xml(get_test_file_full_path("CustomerOrders.xml"), tree);
 
-	customer_orders in;
-	try
-	{
-		in = make_intros_object<customer_orders>(tree);
-	}
-	catch (exception& e)
-	{
-		auto s = e.what();
-		int x = 10;
-	}
+	auto in = make_intros_object<customer_orders>(tree);
 
 	auto tree2 = make_ptree(in);
 

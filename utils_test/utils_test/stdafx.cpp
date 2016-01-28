@@ -3,6 +3,7 @@
 // stdafx.obj will contain the pre-compiled type information
 
 #define BOOST_TEST_MODULE MyTest
+#define _CRT_SECURE_NO_WARNINGS
 
 #include "stdafx.h"
 #include <stdlib.h>
@@ -56,19 +57,16 @@ string get_default_test_files_dir_path()
 	return p.string();
 }
 
-string get_env(const string& env)
+string get_test_files_path()
 {
-	// getenv is depracated for microsoft compiler
-#pragma warning(disable:4996)
-	auto c_res = getenv(env.c_str());
-#pragma warning(default:4996)
+	auto c_res = getenv("TEST_FILES_PATH");
 
 	return (c_res ? c_res : get_default_test_files_dir_path());
 }
 
 string get_test_file_full_path(const string& filename)
 {
-	path p(get_env("TEST_FILES_PATH"));
+	path p(get_test_files_path());
 	p /= filename;
 
 	if (!exists(p))
